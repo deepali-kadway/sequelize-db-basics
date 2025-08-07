@@ -13,12 +13,6 @@ const connection = mysql.createConnection({
   port: "3307",
 });
 
-// A simple SELECT query
-connection.query("SELECT * FROM `users`", function (err, results, fields) {
-  console.log(results); // results contains rows returned by server
-  console.log(fields); // fields contains extra meta data about results, if available
-});
-
 // cors is a middleware that allows us to make requests to the backend server from different domains.
 var cors = require("cors");
 const app = express();
@@ -67,17 +61,20 @@ app.use(
   })
 );
 
-// Mock data in Memory (instead of getting data from a database)
-const users = [
-  { id: 1, username: "JohnDoe", email: "JohnDoe@gmail.com" },
-  { id: 2, username: "JaneDoe", email: "JaneDoe@gmail.com" },
-  { id: 3, username: "JamesDoe", email: "JamesDoe@gmail.com" },
-];
-
 // Get all users
 // localhost:3000/users
 app.get("/users", (req, res) => {
-  res.status(200).send(users);
+  // A simple SELECT query
+  connection.query("SELECT * FROM `users`", (err, results, fields) => {
+    if (err) {
+      res.status(500).send({
+        message: "Database connection failed.",
+        error: err.stack,
+      });
+    } else {
+      res.status(200).send(results);
+    }
+  });
 });
 
 // Get a single user
