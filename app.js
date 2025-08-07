@@ -1,21 +1,11 @@
 // What is express?
 // Express is used to create web server in node. Express works on a middlware concept (callback functions).
 const express = require("express");
-// MySQL import for creating a connection to MYSQL Server.
-const mysql = require("mysql2");
 
 // import sequelize connection
 const sequelize = require("./config");
-
-// test the database connection
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log("Connection has been established successfully.");
-  })
-  .catch((err) => {
-    console.error("Unable to connect to the database:", err);
-  });
+//import user model
+const User = require("./models/user");
 
 // cors is a middleware that allows us to make requests to the backend server from different domains.
 var cors = require("cors");
@@ -68,17 +58,17 @@ app.use(
 // Get all users
 // localhost:3000/users
 app.get("/users", (req, res) => {
-  // A simple SELECT query
-  connection.query("SELECT * FROM `users`", (err, results, fields) => {
-    if (err) {
+  // Use the User model to query database
+  User.findAll()
+    .then((result) => {
+      res.status(200).send(result);
+    })
+    .catch((err) => {
       res.status(500).send({
         message: "Database connection failed.",
         error: err.stack,
       });
-    } else {
-      res.status(200).send(results);
-    }
-  });
+    });
 });
 
 // Get a single user
@@ -178,6 +168,16 @@ app.delete("/users/:id", (req, res) => {
   // return the deleted record to update the client
   res.send(user);
 });
+
+// test the database connection
+sequelize
+  .sync() // sync create the table in database should it not exist
+  .then(() => {
+    console.log("Connection has been established successfully.");
+  })
+  .catch((err) => {
+    console.error("Unable to connect to the database:", err);
+  });
 
 // localhost:3000 OR 127.0.0.1:3000 both reference the current server
 app.listen(3000);
