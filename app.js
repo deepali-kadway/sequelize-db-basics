@@ -1,6 +1,23 @@
 // What is express?
 // Express is used to create web server in node. Express works on a middlware concept (callback functions).
 const express = require("express");
+// MySQL import for creating a connection to MYSQL Server.
+const mysql = require("mysql2");
+
+// Create the connection to database
+const connection = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  database: "task_manager",
+  password: "password",
+  port: "3307",
+});
+
+// A simple SELECT query
+connection.query("SELECT * FROM `users`", function (err, results, fields) {
+  console.log(results); // results contains rows returned by server
+  console.log(fields); // fields contains extra meta data about results, if available
+});
 
 // cors is a middleware that allows us to make requests to the backend server from different domains.
 var cors = require("cors");
