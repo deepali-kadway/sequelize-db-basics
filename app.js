@@ -4,14 +4,18 @@ const express = require("express");
 // MySQL import for creating a connection to MYSQL Server.
 const mysql = require("mysql2");
 
-// Create the connection to database
-const connection = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  database: "task_manager",
-  password: "password",
-  port: "3307",
-});
+// import sequelize connection
+const sequelize = require("./config");
+
+// test the database connection
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log("Connection has been established successfully.");
+  })
+  .catch((err) => {
+    console.error("Unable to connect to the database:", err);
+  });
 
 // cors is a middleware that allows us to make requests to the backend server from different domains.
 var cors = require("cors");
